@@ -2,4 +2,9 @@
 
 set -ex
 
-rm -rf /home/frk_ftp/works/images/
+rm -rf /home/frk_ftp/agent/mitsubishiufj/madori/*
+rm -rf /home/frk_ftp/agent/mitsubishiufj/photo/*
+rm -rf /home/frk_ftp/agent/mitsubishiufj/photo2/*
+rm -rf /home/frk_ftp/agent/mitsubishiufj/photo3/*
+rm -rf /home/frk_ftp/agent/mitsubishiufj/photo4/*
+rm -rf /home/frk_ftp/agent/mitsubishiufj/photo5/*
