@@ -2,4 +2,4 @@
 
 set -ex
 
-rm -rf /home/frk_ftp/works/images/*
+rm -rf /home/frk_ftp/works/images/
