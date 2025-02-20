@@ -35,24 +35,29 @@ touch "/home/frk_ftp/agents/mitsubishiufj/frk_chukai.csv"
 } | iconv -c -f UTF-8 -t SHIFT-JIS > "/home/frk_ftp/agents/mitsubishiufj/frk_chukai.csv.tmp" && \
 mv "/home/frk_ftp/agents/mitsubishiufj/frk_chukai.csv.tmp" "/home/frk_ftp/agents/mitsubishiufj/frk_chukai.csv"
 
-touch "/home/frk_ftp/agents/mitsubishiufj/photo/12345678.jpg"
-touch "/home/frk_ftp/agents/mitsubishiufj/photo/12345679.jpg"
-touch "/home/frk_ftp/agents/mitsubishiufj/photo/12345680.jpg"
-touch "/home/frk_ftp/agents/mitsubishiufj/photo/12345681.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/madori/52IK0156.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/madori/53HK0347.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/madori/52JK0247.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/madori/730KS00K.jpg"
 
-touch "/home/frk_ftp/agents/mitsubishiufj/photo2/12345678.jpg"
-touch "/home/frk_ftp/agents/mitsubishiufj/photo2/12345679.jpg"
-touch "/home/frk_ftp/agents/mitsubishiufj/photo2/12345680.jpg"
-touch "/home/frk_ftp/agents/mitsubishiufj/photo2/12345681.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo/52IK0156.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo/53HK0347.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo/52JK0247.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo/730KS00K.jpg"
 
-touch "/home/frk_ftp/agents/mitsubishiufj/photo3/12345678.jpg"
-touch "/home/frk_ftp/agents/mitsubishiufj/photo3/12345679.jpg"
-touch "/home/frk_ftp/agents/mitsubishiufj/photo3/12345680.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo2/52IK0156.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo2/53HK0347.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo2/52JK0247.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo2/730KS00K.jpg"
 
-touch "/home/frk_ftp/agents/mitsubishiufj/photo4/12345678.jpg"
-touch "/home/frk_ftp/agents/mitsubishiufj/photo4/12345679.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo3/52IK0156.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo3/53HK0347.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo3/52JK0247.jpg"
 
-touch "/home/frk_ftp/agents/mitsubishiufj/photo5/12345678.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo4/52IK0156.jpg"
+touch "/home/frk_ftp/agents/mitsubishiufj/photo4/53HK0347.jpg"
+
+touch "/home/frk_ftp/agents/mitsubishiufj/photo5/52IK0156.jpg"
 
 {
     echo "--- データ作成 終了 --- ${DATETIME}"
