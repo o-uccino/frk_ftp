@@ -11,8 +11,9 @@ LOG_FILE_GENERAL="/home/frk_ftp/log/output.log"
 touch "$OUTPUT_FILE_PATH"
 echo "frk_bukken_id,madori,photo,photo2,photo3,photo4,photo5" > "$OUTPUT_FILE_PATH"
 
-# 物件IDのリストを生成（例：madoriディレクトリ内のファイルから）
-find "$BASE_DIR/mitsubishiufj/madori" -type f -name "*.jpg" -exec basename {} .jpg \; | sort -u > /tmp/bukken_list.txt
+# CSVファイルから物件IDを抽出
+iconv -f SHIFT-JIS -t UTF-8 "$BASE_DIR/mitsubishiufj/frk_chukai.csv" > /tmp/frk_chukai_utf8.csv
+awk -F',' '{print $2}' "/tmp/frk_chukai_utf8.csv" | sort -u > /tmp/bukken_list.txt
 
 # ファイルリストの各ファイル名に対して処理
 while IFS= read -r frk_bukken_id; do
