@@ -71,24 +71,3 @@ echo "clean up ok"
 
 echo "--- clean up 終了 --- ${DATETIME}" >> "/home/frk_ftp/scripts/testlog_${DATETIME}.log"
 exit 0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
