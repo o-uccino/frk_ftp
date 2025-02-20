@@ -10,7 +10,7 @@ fi
 DATETIME=$(date '+%Y%m%d%H%M%S')
 DATE=$(date '+%Y%m%d')
 
-./remove_work_images.sh
+/home/frk_ftp/scripts/remove_work_images.sh
 {
     ls "/home/frk_ftp/agents/mitsubishiufj/"
     echo "--- 画像削除 終了 --- ${DATETIME}"
@@ -58,13 +58,13 @@ touch "/home/frk_ftp/agents/mitsubishiufj/photo5/12345678.jpg"
     echo "--- データ作成 終了 --- ${DATETIME}"
 } >> "/home/frk_ftp/scripts/testlog_${DATETIME}.log"
 
-./upload_csv_to_s3.sh
+/home/frk_ftp/scripts/upload_csv_to_s3.sh
 {
     aws s3 ls "s3://recat-staging/estates_import/frk/${DATE}/"
     echo "--- CSVアップロード 終了 --- ${DATETIME}"
 } >> "/home/frk_ftp/scripts/testlog_${DATETIME}.log"
 
-./upload_picture_avail_to_s3.sh
+/home/frk_ftp/scripts/upload_picture_avail_to_s3.sh
 {
     cat "/home/frk_ftp/agents/mitsubishiufj/frk_bukken_check.csv"
     aws s3 ls "s3://recat-staging/estate_import/frk/${DATE}/"
