@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DATE=$(date +%Y-%m-%d\ %H:%M:%S)
-BASE_DIR="/home/frk_ftp/agents"
+BASE_DIR="/home/frk_ftp/works/agents"
 OUTPUT_FILE_NAME="frk_bukken_check.csv"
 OUTPUT_FILE_PATH="$BASE_DIR/mitsubishiufj/$OUTPUT_FILE_NAME"
 LOG_FILE_SCRIPT="/home/frk_ftp/log/mitsubishiufj/frk_bukken_check.log"

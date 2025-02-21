@@ -61,6 +61,7 @@ touch "/home/frk_ftp/agents/mitsubishiufj/photo5/52IK0156.jpg"
 {
     echo "--- データ作成 終了 --- ${DATETIME}"
 } >> "/home/frk_ftp/scripts/testlog_${DATETIME}.log"
+/home/frk_ftp/scripts/copy_data_to_work_directory.sh
 
 /home/frk_ftp/scripts/upload_csv_to_s3.sh
 {
@@ -70,13 +71,13 @@ touch "/home/frk_ftp/agents/mitsubishiufj/photo5/52IK0156.jpg"
 
 /home/frk_ftp/scripts/upload_picture_avail_to_s3.sh
 {
-    cat "/home/frk_ftp/agents/mitsubishiufj/frk_bukken_check.csv"
+    cat "/home/frk_ftp/works/agents/mitsubishiufj/frk_bukken_check.csv"
     aws s3 ls "s3://recat-staging/estate_import/frk/${DATE}/"
     echo "--- 画像存在チェックアップロード 終了 --- ${DATETIME}"
 } >> "/home/frk_ftp/scripts/testlog_${DATETIME}.log"
 
 # correct data
-cat > "/home/frk_ftp/agents/mitsubishiufj/correct_data.csv" << EOL
+cat > "/home/frk_ftp/works/agents/mitsubishiufj/correct_data.csv" << EOL
 frk_bukken_id,madori,photo,photo2,photo3,photo4,photo5
 52IK0156,true,true,true,true,true,true
 52JK0247,true,true,true,true,false,false
@@ -85,21 +86,21 @@ frk_bukken_id,madori,photo,photo2,photo3,photo4,photo5
 730KS00K,true,true,true,false,false,false
 EOL
 
-if diff -q "/home/frk_ftp/agents/mitsubishiufj/frk_bukken_check.csv" "/home/frk_ftp/agents/mitsubishiufj/correct_data.csv" > /dev/null; then
+if diff -q "/home/frk_ftp/works/agents/mitsubishiufj/frk_bukken_check.csv" "/home/frk_ftp/works/agents/mitsubishiufj/correct_data.csv" > /dev/null; then
     echo "--- CSVファイル検証 OK --- ${DATETIME}" >> "/home/frk_ftp/scripts/testlog_${DATETIME}.log"
     echo "csv check ok"
 else
     {
         echo "--- CSVファイル検証 NG --- ${DATETIME}"
         echo "--- 差分の詳細 --- ${DATETIME}"
-        diff "/home/frk_ftp/agents/mitsubishiufj/frk_bukken_check.csv" "/home/frk_ftp/agents/mitsubishiufj/correct_data.csv"
+        diff "/home/frk_ftp/works/agents/mitsubishiufj/frk_bukken_check.csv" "/home/frk_ftp/works/agents/mitsubishiufj/correct_data.csv"
     } >> "/home/frk_ftp/scripts/testlog_${DATETIME}.log"
     echo "csv check ng"
-    diff "/home/frk_ftp/agents/mitsubishiufj/frk_bukken_check.csv" "/home/frk_ftp/agents/mitsubishiufj/correct_data.csv"
+    diff "/home/frk_ftp/works/agents/mitsubishiufj/frk_bukken_check.csv" "/home/frk_ftp/works/agents/mitsubishiufj/correct_data.csv"
 fi
 
 echo "test end"
-rm -rf "/home/frk_ftp/agents/mitsubishiufj/"
+rm -rf "/home/frk_ftp/works/agents/mitsubishiufj/"
 echo "clean up ok"
 echo "--- clean up 終了 --- ${DATETIME}" >> "/home/frk_ftp/scripts/testlog_${DATETIME}.log"
 
