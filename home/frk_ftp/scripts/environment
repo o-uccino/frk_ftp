@@ -1,0 +1,5 @@
+RECAT_S3_BUCKET=recat-staging
+KANRI_IMAGE_HOST=10.0.21.141
+WWW1_HOST=10.0.21.181
+WWW2_HOST=10.0.21.181
+CO_FTP_HOST=z-stco-ftp.ocno.internal
