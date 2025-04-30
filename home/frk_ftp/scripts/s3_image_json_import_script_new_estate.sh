@@ -5,14 +5,15 @@ set -e
 AWS_REGION='ap-northeast-1'
 export AWS_REGION
 
-# 環境設定ファイルから変数を読み込む
-RECAT_S3_BUCKET="recat-staging"
+source /home/frk_ftp/scripts/environment
 
 # 今日の日付パターンを作成
 TARGET_PATTERN=$(date +"%Y-%m-%d")
 
 # S3からオブジェクトリストを取得
 KEYS=$(aws s3 ls "s3://${RECAT_S3_BUCKET}/estates_import/frk_image_sync/${TARGET_PATTERN}" --recursive | awk '{print $4}')
+
+mkdir -p /home/frk_ftp/works/new_estate_images
 
 # new_estate.jsonで終わるファイルを処理
 for KEY in $KEYS; do
@@ -37,7 +38,8 @@ for KEY in $KEYS; do
       mkdir -p "$TARGET_DIR"
       
       # 元のディレクトリパス
-      SOURCE_BASE="/home/frk_ftp/works/agents/${FTP_USER}"
+      SOURCE_BASE="/home/frk_ftp/works/${FTP_USER}"
+      echo "Source base: $SOURCE_BASE"
       
       if [[ "$FRK_BUKKEN_ID" =~ ^[0-9A-Za-z]{8}$ ]]; then
         # 間取り図のコピー
@@ -48,15 +50,18 @@ for KEY in $KEYS; do
         
         # 写真のコピー（photo1-5）
         for i in {1..5}; do
+          if [ "$i" -eq 1 ]; then
+            SOURCE_FILE="${SOURCE_BASE}/photo/${FRK_BUKKEN_ID}.jpg"
+            if [ -f "$SOURCE_FILE" ]; then
+              cp "$SOURCE_FILE" "${TARGET_DIR}/photo.jpg"
+              cp "$SOURCE_FILE" "${TARGET_DIR}/thumbnail_photo.jpg"
+              echo "Copied external: ${FRK_BUKKEN_ID}.jpg"
+            fi
+          fi
           SOURCE_FILE="${SOURCE_BASE}/photo${i}/${FRK_BUKKEN_ID}.jpg"
           if [ -f "$SOURCE_FILE" ]; then
-            if [ "$i" -eq 1 ]; then
-              cp "$SOURCE_FILE" "${TARGET_DIR}/external_${FRK_BUKKEN_ID}.jpg"
-              echo "Copied external: ${FRK_BUKKEN_ID}.jpg"
-            else
-              cp "$SOURCE_FILE" "${TARGET_DIR}/content0${i}_${FRK_BUKKEN_ID}.jpg"
-              echo "Copied content0${i}: ${FRK_BUKKEN_ID}.jpg"
-            fi
+            cp "$SOURCE_FILE" "${TARGET_DIR}/photo${i}.jpg"
+            echo "Copied photo${i}: ${FRK_BUKKEN_ID}.jpg"
           fi
         done
       else
