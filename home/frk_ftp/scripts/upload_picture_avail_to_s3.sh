@@ -41,46 +41,65 @@ while IFS= read -r FOLDER || [ -n "$FOLDER" ]; do
     touch "$OUTPUT_FILE_PATH"
     echo "frk_bukken_id,madori,photo,photo2,photo3,photo4,photo5" > "$OUTPUT_FILE_PATH"
 
-    # CSVファイルが存在するか確認
-    if [ ! -f "$BASE_DIR/$FOLDER/bukken.csv" ]; then
-        echo "--- bukken.csv not found in $FOLDER --- $DATE" >> "$LOG_FILE_GENERAL"
+    # XMLファイルが存在するか確認（CSVとXMLの両方をサポート）
+    XML_INPUT_FILE="$BASE_DIR/$FOLDER/bukken.xml"
+    CSV_INPUT_FILE="$BASE_DIR/$FOLDER/bukken.csv"
+    
+    if [ -f "$XML_INPUT_FILE" ]; then
+        echo "--- Processing XML input file: $XML_INPUT_FILE --- $DATE" >> "$LOG_FILE_GENERAL"
+        # XMLファイルから物件番号を抽出 (property_number)
+        xmllint --xpath "//lineItem/property/basic/property_number/text()" "$XML_INPUT_FILE" 2>/dev/null | tr ' ' '\n' | grep -v '^$' | while read property_number; do
+            # 物件番号の最後の8桁を抽出（CSVと同じロジック）
+            echo "${property_number: -8}"
+        done | sort -u > "/tmp/${FOLDER}_bukken_list.txt"
+        
+        # xmllintが利用できない場合の代替手段
+        if [ ! -s "/tmp/${FOLDER}_bukken_list.txt" ]; then
+            echo "--- xmllint not available, using grep for XML parsing --- $DATE" >> "$LOG_FILE_GENERAL"
+            grep -o '<property_number>[^<]*</property_number>' "$XML_INPUT_FILE" | sed 's/<[^>]*>//g' | while read property_number; do
+                # 物件番号の最後の8桁を抽出（CSVと同じロジック）
+                echo "${property_number: -8}"
+            done | sort -u > "/tmp/${FOLDER}_bukken_list.txt"
+        fi
+    elif [ -f "$CSV_INPUT_FILE" ]; then
+        echo "--- Processing CSV input file: $CSV_INPUT_FILE --- $DATE" >> "$LOG_FILE_GENERAL"
+        # CSVファイルから物件IDを抽出 - エラー対策としてエラーを無視するオプションを追加
+        iconv -f SHIFT-JIS -t UTF-8 -c "$CSV_INPUT_FILE" > "/tmp/${FOLDER}_utf8.csv" || true
+        if [ ! -s "/tmp/${FOLDER}_utf8.csv" ]; then
+            echo "--- iconv failed for $FOLDER/bukken.csv, trying with --unicode-subst option --- $DATE" >> "$LOG_FILE_GENERAL"
+            iconv -f SHIFT-JIS -t UTF-8 --unicode-subst="?" "$CSV_INPUT_FILE" > "/tmp/${FOLDER}_utf8.csv" || true
+        fi
+        awk -F',' '{val=$88; gsub(/^"|"$/, "", val); print substr(val, 8, 8)}' "/tmp/${FOLDER}_utf8.csv" | sort -u > "/tmp/${FOLDER}_bukken_list.txt"
+    else
+        echo "--- Neither bukken.xml nor bukken.csv found in $FOLDER --- $DATE" >> "$LOG_FILE_GENERAL"
         continue
     fi
 
-    # CSVファイルから物件IDを抽出 - エラー対策としてエラーを無視するオプションを追加
-    iconv -f SHIFT-JIS -t UTF-8 -c "$BASE_DIR/$FOLDER/bukken.csv" > "/tmp/${FOLDER}_utf8.csv" || true
-    if [ ! -s "/tmp/${FOLDER}_utf8.csv" ]; then
-        echo "--- iconv failed for $FOLDER/bukken.csv, trying with --unicode-subst option --- $DATE" >> "$LOG_FILE_GENERAL"
-        iconv -f SHIFT-JIS -t UTF-8 --unicode-subst="?" "$BASE_DIR/$FOLDER/bukken.csv" > "/tmp/${FOLDER}_utf8.csv" || true
-    fi
-
-    awk -F',' '{print $2}' "/tmp/${FOLDER}_utf8.csv" | sort -u > "/tmp/${FOLDER}_bukken_list.txt"
-
     # ファイルリストの各ファイル名に対して処理
-    while IFS= read -r frk_bukken_id; do
+    while IFS= read -r property_number; do
         # ダブルクオーテーションを削除
-        frk_bukken_id=$(echo "$frk_bukken_id" | tr -d '"')
+        property_number=$(echo "$property_number" | tr -d '"')
         
         # 8桁未満の場合に0埋めする処理
-        frk_bukken_id_length=${#frk_bukken_id}
-        if [ $frk_bukken_id_length -lt 8 ]; then
+        property_number_length=${#property_number}
+        if [ "$property_number_length" -lt 8 ]; then
             # 0埋めして8桁にする
-            frk_bukken_id=$(printf "%08d" $frk_bukken_id)
-            echo "ID padded to 8 digits: $frk_bukken_id" >> "$LOG_FILE_SCRIPT"
+            property_number=$(printf "%08d" "$property_number")
+            echo "ID padded to 8 digits: $property_number" >> "$LOG_FILE_SCRIPT"
         fi
         
-        madori_exists=$([ -f "$BASE_DIR/$FOLDER/madori/$frk_bukken_id.jpg" ] && echo "true" || echo "false")
-        photo_exists=$([ -f "$BASE_DIR/$FOLDER/photo/$frk_bukken_id.jpg" ] && echo "true" || echo "false")
-        photo2_exists=$([ -f "$BASE_DIR/$FOLDER/photo2/$frk_bukken_id.jpg" ] && echo "true" || echo "false")
-        photo3_exists=$([ -f "$BASE_DIR/$FOLDER/photo3/$frk_bukken_id.jpg" ] && echo "true" || echo "false")
-        photo4_exists=$([ -f "$BASE_DIR/$FOLDER/photo4/$frk_bukken_id.jpg" ] && echo "true" || echo "false")
-        photo5_exists=$([ -f "$BASE_DIR/$FOLDER/photo5/$frk_bukken_id.jpg" ] && echo "true" || echo "false")
+        madori_exists=$([ -f "$BASE_DIR/$FOLDER/madori/$property_number.jpg" ] && echo "true" || echo "false")
+        photo_exists=$([ -f "$BASE_DIR/$FOLDER/photo/$property_number.jpg" ] && echo "true" || echo "false")
+        photo2_exists=$([ -f "$BASE_DIR/$FOLDER/photo2/$property_number.jpg" ] && echo "true" || echo "false")
+        photo3_exists=$([ -f "$BASE_DIR/$FOLDER/photo3/$property_number.jpg" ] && echo "true" || echo "false")
+        photo4_exists=$([ -f "$BASE_DIR/$FOLDER/photo4/$property_number.jpg" ] && echo "true" || echo "false")
+        photo5_exists=$([ -f "$BASE_DIR/$FOLDER/photo5/$property_number.jpg" ] && echo "true" || echo "false")
         # 結果をCSVファイルに追記
-        echo "$frk_bukken_id,$madori_exists,$photo_exists,$photo2_exists,$photo3_exists,$photo4_exists,$photo5_exists" >> "$OUTPUT_FILE_PATH"
+        echo "$property_number,$madori_exists,$photo_exists,$photo2_exists,$photo3_exists,$photo4_exists,$photo5_exists" >> "$OUTPUT_FILE_PATH"
     done < "/tmp/${FOLDER}_bukken_list.txt"
 
     # 一時ファイルの削除
-    rm "/tmp/${FOLDER}_utf8.csv" "/tmp/${FOLDER}_bukken_list.txt"
+    rm -f "/tmp/${FOLDER}_utf8.csv" "/tmp/${FOLDER}_bukken_list.txt"
 
     echo "--- file check completed for $FOLDER --- $DATE" > "$LOG_FILE_SCRIPT"
     echo "--- file check completed for $FOLDER --- $DATE" >> "$LOG_FILE_GENERAL"
